@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  workflow_dispatch
+
+jobs:
+  run-tests:
+    name: Run Tests
+    runs-on: ['ubuntu-latest']
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Node Action
+        uses: actions/setup-node@v4
+        with: 
+          node-version: 20
+
+      - name: Install yarn
+        run: 
+          yarn install
+
+      - name: Build yarn
+        run: 
+          yarn build
+
+      - name: Test yarn
+        run: 
+          yarn test
+
+      - name: Integration test
+        run: 
+          yarn test:e2e
+
+      - name: Report JUnit test results
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: '**/reports/*.xml'
